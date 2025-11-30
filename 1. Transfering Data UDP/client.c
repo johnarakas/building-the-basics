@@ -17,9 +17,10 @@
 int main()
 {   
     int sockfd, n;
+    char buffer[MAXLINE];
     struct sockaddr_in servaddr;
     
-    char *buffer = reader("file.txt");
+    char *filePtr = reader("file.txt");
 
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -29,15 +30,35 @@ int main()
     // create datagram socket
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     
-    // connect to server
+    int counter=0;
+    int fileSize = strlen(filePtr);
+
     if(connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
     {
         printf("\n Error : Connect Failed \n");
         exit(0);
     }
 
-    sendto(sockfd, buffer , strlen(buffer), 0, (struct sockaddr*)NULL, sizeof(servaddr));
-    
+    while(counter < fileSize){
+        
+
+        if( (fileSize - counter) <= 100){
+            strncpy(buffer, filePtr+  counter , fileSize - counter);
+            
+            buffer[(fileSize - counter)] = '\0';
+            counter+=(fileSize - counter);
+            
+        }else{
+            strncpy(buffer, filePtr+counter, MAXLINE);
+            buffer[100] = '\0';
+
+            counter+=MAXLINE;
+        }
+
+        sendto(sockfd, buffer , strlen(buffer), 0, (struct sockaddr*)NULL, sizeof(servaddr));
+
+    }
 
     close(sockfd);
+    return 0;
 }

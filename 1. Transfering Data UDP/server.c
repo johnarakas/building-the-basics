@@ -6,12 +6,12 @@
 #include <sys/socket.h>
 #include<netinet/in.h>
 #define PORT 5000
-#define MAXLINE 1000
+#define MAXLINE 100
 
 // Driver code
 int main()
 {   
-    char buffer[1000];
+    char buffer[100];
     int listenfd, len;
     struct sockaddr_in servaddr, cliaddr;
     bzero(&servaddr, sizeof(servaddr));
@@ -26,11 +26,15 @@ int main()
     bind(listenfd, (struct sockaddr*)&servaddr, sizeof(servaddr));
      
     //receive the datagram
+    int counter = 0;
     len = sizeof(cliaddr);
-    int n = recvfrom(listenfd, buffer, sizeof(buffer),
-            0, (struct sockaddr*)&cliaddr,&len); //receive message from server
-    buffer[n] = '\0';
+    while(1){
+        int n = recvfrom(listenfd, buffer, sizeof(buffer),
+                0, (struct sockaddr*)&cliaddr,&len);
+        buffer[n] = '\0';
 
-    printf("Received : %s",buffer);
+        printf("Received [%d] : %s\n\n",counter, buffer);
+        counter++;
+    }
 
 }
