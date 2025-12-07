@@ -5,34 +5,30 @@
 #include "file_utils.h"
 
 
-void printer(char * filename) {
-    
-    char ch;
 
-    FILE *fptr = fopen(filename, "r");
-
-    while ((ch = fgetc(fptr)) != EOF)
-        printf("%c", ch);
-        
-    printf("\n");
-    
-    fclose(fptr);
-}
-
-char *reader(char * filename){
+void reader(char * filename , char **data){
    
 
     FILE *file = fopen(filename, "r");
 
+    if(file== NULL){
+        printf("Could not open the file\n");
+        return;
+    }
+
     fseek(file, 0, SEEK_END);
+
     int size = ftell(file);
 
     fseek(file, 0, SEEK_SET);
 
-    char *source = (char *)malloc(sizeof(char) * size + 1);
-    fread(source, 1, size, file);
+    *data = (char *)malloc(sizeof(char) * size + 1);
+    
+    fread(*data, 1, size, file);
     fclose(file);
-    source[size] = '\0';
+    (*data)[size] = '\0';
 
-    return source;
+    printf("%s\n",*data);
+
+
 }

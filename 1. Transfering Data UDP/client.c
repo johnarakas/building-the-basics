@@ -19,9 +19,12 @@ int main()
     int sockfd, n;
     char buffer[MAXLINE];
     struct sockaddr_in servaddr;
-    
-    char *filePtr = reader("file.txt");
+    char *data = NULL;
 
+
+    reader("file.txt", &data);
+
+    printf("%s\n\n\n", data);
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
     servaddr.sin_port = htons(PORT);
@@ -31,7 +34,7 @@ int main()
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     
     int counter=0;
-    int fileSize = strlen(filePtr);
+    int fileSize = strlen(data);
 
     if(connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
     {
@@ -43,13 +46,13 @@ int main()
         
 
         if( (fileSize - counter) <= 100){
-            strncpy(buffer, filePtr+  counter , fileSize - counter);
+            strncpy(buffer, data+  counter , fileSize - counter);
             
             buffer[(fileSize - counter)] = '\0';
             counter+=(fileSize - counter);
             
         }else{
-            strncpy(buffer, filePtr+counter, MAXLINE);
+            strncpy(buffer, data +counter, MAXLINE);
             buffer[100] = '\0';
 
             counter+=MAXLINE;
@@ -60,5 +63,6 @@ int main()
     }
 
     close(sockfd);
+    free(data);
     return 0;
 }
